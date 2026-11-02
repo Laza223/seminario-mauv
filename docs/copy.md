@@ -7,7 +7,7 @@ Regla: se potencia el encuadre, nunca el número. Nada de cupos, testimonios ni 
 
 - Precio **$90.000** (tachado $145.000 → "Ahorrás $55.000 (38% menos)"), **6 lugares**, certificado, cierre ~16 h (aprox.), el alumno trae su modelo, herramientas básicas.
 - Pago y cancelación: "lo coordinás directo con Mauv por WhatsApp" / "avisá con anticipación". No se nombran medios de pago.
-- Sin bio ni historia del 311. Sin video: el héroe es una foto fija (mullet con fade).
+- Sin bio ni historia del 311. Sin video ni foto en el héroe: el emblema es el logo de Mauv, grande, que se traza al cargar (pedido de Mauv).
 - Testimonios: 5 citas textuales, sin nombres, entre "Te llevás" y "Tu lugar". Falta confirmar con Mauv el permiso para publicarlas.
 - Único dato sin respuesta: "¿Sirve si recién arranco?" (queda con `confirmar` en `Preguntas.astro`).
 - Los valores `[CONFIRMAR]` y los $85.000 / 12 lugares de más abajo son del borrador original.

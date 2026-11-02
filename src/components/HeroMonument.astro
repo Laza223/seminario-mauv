@@ -1,22 +1,19 @@
 ---
-// Héroe — "El nombre como monumento" (elegido en el checkpoint 1): un corte real de Mauv de fondo, el nombre
-// enorme abajo y la fecha, el precio y el botón encima. Foto fija: se enfoca al cargar y el nombre sale de una
-// máscara; después la barra fija toma el relevo del botón.
-import { Image } from 'astro:assets';
+// Héroe — "El nombre como monumento" (elegido en el checkpoint 1): el logo de Mauv grande como emblema, el nombre
+// enorme abajo y la fecha, el precio y el botón en el medio. El logo se traza al cargar (de izquierda a derecha) y el
+// nombre sale de una máscara; después la barra fija toma el relevo del botón.
 import Logo from './Logo.astro';
-import photo from '../assets/ig/hero-mullet.jpg';
 import { event, money, waHref } from '../data/event';
 ---
 
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="stage">
     <div class="media" aria-hidden="true">
-      <Image src={photo} alt="" widths={[480, 720, 1080]} sizes="(orientation: landscape) 60vh, 100vw" loading="eager" fetchpriority="high" class="pic" />
+      <Logo class="mark mark--ghost" />
+      <Logo class="mark" />
     </div>
-    <div class="scrim" aria-hidden="true"></div>
 
     <header class="bar">
-      <a href="#top" class="brand" aria-label="MAUV311"><Logo class="logo" /></a>
       <a class="btn btn--bar" href={waHref} data-cta="bar">Reservar</a>
     </header>
 
@@ -46,7 +43,7 @@ import { event, money, waHref } from '../data/event';
     position: relative;
   }
   .stage {
-    position: relative; /* contiene a .media y .scrim: el foco inicial (scale) no se sale ni mide de más */
+    position: relative; /* contiene a .media: la copia enorme del logo se recorta en el borde del héroe */
     height: 100svh;
     min-height: 600px;
     overflow: hidden;
@@ -56,66 +53,51 @@ import { event, money, waHref } from '../data/event';
     --name: calc((100vw - 2 * var(--m)) / 5.9);
     --name-h: calc(var(--name) * 0.74);
   }
-  .media,
-  .scrim {
+  /* El emblema: el logo ocupa la zona libre entre el rótulo de arriba y el bloque de info. Atrás, una copia enorme y
+     casi invisible (3 % de tinta) que da escala sin competir con nada. */
+  .media {
     position: absolute;
     inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 120px var(--m) calc(var(--name-h) + 230px);
+    background: var(--bg);
   }
-  .pic {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 30%;
-    animation: focus 1.6s var(--ease) both;
+  .media :global(.mark) {
+    grid-area: 1 / 1;
+    width: min(100%, 560px);
+    height: auto;
+    color: var(--ink);
+    animation: trace 1.5s var(--ease) 0.1s both;
   }
-  .media {
-    background: #000;
+  .media :global(.mark--ghost) {
+    position: absolute;
+    left: 50%;
+    top: 38%;
+    translate: -50% -50%;
+    width: 230%;
+    max-width: none;
+    opacity: 0.03;
+    animation-delay: 0s;
   }
-  /* En vertical (celu) la foto ocupa la parte de arriba, entera y sin tapar la cara con el texto: abajo se funde
-     en negro y ahí van la fecha, el precio y el nombre. */
-  @media (orientation: portrait) {
+  @keyframes trace {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 -1% 0 -1%);
+    }
+  }
+  @media (min-width: 900px) {
     .media {
-      background: var(--bg);
+      padding-bottom: calc(var(--name-h) + 56px);
     }
-    .pic {
-      height: 68%;
-      object-position: 24% 0;
-      mask-image: linear-gradient(to bottom, #000 72%, transparent); /* taste-skill-ignore: la foto se funde en el negro del texto */
+    .media :global(.mark) {
+      width: min(52vw, 700px);
     }
-  }
-  /* Tablet vertical: la foto no se estira al ancho (perdería la cara bajo el texto): columna centrada, fundida a los costados. */
-  @media (orientation: portrait) and (min-width: 600px) {
-    .pic {
-      width: auto;
-      margin-inline: auto;
-      aspect-ratio: 1135 / 1492;
-      object-position: 50% 0;
-      mask-image: linear-gradient(to bottom, #000 72%, transparent), linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); /* taste-skill-ignore: fundido de la foto */
-      mask-composite: intersect;
+    .media :global(.mark--ghost) {
+      width: 150vw;
     }
-  }
-  /* En horizontal la foto vertical va entera, como una columna centrada del alto del héroe,
-     con los costados fundidos en un negro igual al suyo: sin tira de bordes duros. */
-  @media (orientation: landscape) {
-    .media {
-      background: #0a0a0a;
-    }
-    .pic {
-      width: auto;
-      margin-inline: auto;
-      aspect-ratio: 1135 / 1492;
-      mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); /* taste-skill-ignore: fundido de los bordes de la foto vertical */
-    }
-  }
-  /* Velo neutro solo donde va texto: la única excepción a "sin degradés". */
-  .scrim {
-    background: linear-gradient( /* taste-skill-ignore: velo neutro bajo el texto, sobre la foto */
-      to bottom,
-      rgb(11 11 11 / 0.55),
-      rgb(11 11 11 / 0.1) 28%,
-      rgb(11 11 11 / 0.2) 50%,
-      rgb(11 11 11 / 0.92)
-    );
   }
 
   .bar {
@@ -123,12 +105,8 @@ import { event, money, waHref } from '../data/event';
     z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 18px var(--m);
-  }
-  .brand :global(.logo) {
-    width: 88px;
-    color: var(--ink);
   }
   .btn--bar {
     --h: 44px;
@@ -201,7 +179,7 @@ import { event, money, waHref } from '../data/event';
     font-stretch: 112%;
   }
 
-  /* Entrada en CSS puro (corre sin esperar a JS; con reduced-motion queda en 0,01 ms, global.css): la foto se enfoca,
+  /* Entrada en CSS puro (corre sin esperar a JS; con reduced-motion queda en 0,01 ms, global.css): el logo se traza,
      el nombre sube desde una máscara y la info llega después. */
   .k,
   .info > * {
@@ -239,20 +217,12 @@ import { event, money, waHref } from '../data/event';
       clip-path: inset(-30% -5% -30% -5%);
     }
   }
-  @keyframes focus {
-    from {
-      transform: scale(1.07);
-    }
-  }
 
   /* Celu: el nombre se apila (MAUV / 311) para ser de verdad monumental en 390 px. */
   @media (max-width: 899px) {
     .stage {
       --name: calc((100vw - 2 * var(--m)) / 3.8);
       --name-h: calc(var(--name) * 0.74 * 2 + 4px);
-    }
-    .brand :global(.logo) {
-      width: 74px;
     }
     .k {
       font-size: 1rem;
@@ -291,6 +261,12 @@ import { event, money, waHref } from '../data/event';
   }
   /* Celu acostado: el nombre apilado no entra en el alto; vuelve a una línea, como en escritorio. */
   @media (max-width: 899px) and (orientation: landscape) {
+    .media {
+      padding-bottom: calc(var(--name-h) + 214px);
+    }
+    .media :global(.mark) {
+      width: min(100%, 300px);
+    }
     .stage {
       --name: calc((100vw - 2 * var(--m)) / 5.9);
       --name-h: calc(var(--name) * 0.74);
