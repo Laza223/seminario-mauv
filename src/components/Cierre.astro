@@ -1,0 +1,114 @@
+---
+// Dónde + cierre + footer en un solo campo: la dirección como título, la invitación y MAUV311 cortado abajo.
+import { event, waHref, igHref, mapsHref } from '../data/event';
+---
+
+<section class="donde" aria-labelledby="donde-title">
+  <div>
+    <h2 id="donde-title" class="display">{event.street}, {event.city}</h2>
+    <p>{event.venue}. {event.dayLabel}, {event.timeLabel}.</p>
+  </div>
+  <a class="btn" href={mapsHref} target="_blank" rel="noopener">Cómo llegar</a>
+</section>
+
+<footer class="cierre" aria-labelledby="cierre-title">
+  <div class="top">
+    <div>
+      <h2 id="cierre-title" class="display">Nos vemos el 22.</h2>
+      <a class="btn btn--paper" href={waHref} data-cta="cierre">Reservar mi lugar</a>
+    </div>
+    <ul class="links">
+      <li><a href={waHref}>WhatsApp</a></li>
+      <li><a href={igHref} target="_blank" rel="noopener">Instagram @{event.instagram}</a></li>
+      <li><a href={mapsHref} target="_blank" rel="noopener">{event.street}, {event.city}</a></li>
+    </ul>
+  </div>
+  <p class="legal">
+    <span>© {new Date(event.startsAt).getFullYear()} {event.venue}</span>
+    <span>Video del inicio generado con IA (Google Flow).</span>
+  </p>
+  <p class="name display" aria-hidden="true">MAUV<span>311</span></p>
+</footer>
+
+<style>
+  .donde {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding: var(--gap-section) var(--m) clamp(80px, 10vw, 140px);
+  }
+  .donde h2 {
+    font-size: var(--t-lg);
+  }
+  .donde p {
+    margin-top: 18px;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+  }
+
+  .cierre {
+    background: var(--paper);
+    color: var(--paper-ink);
+    min-height: 72svh;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    overflow: hidden;
+    padding: clamp(80px, 10vw, 140px) var(--m) 0;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .top h2 {
+    font-size: var(--t-lg);
+    margin-bottom: 36px;
+  }
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .links a {
+    text-underline-offset: 4px;
+  }
+  .legal {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.8125rem;
+    color: var(--paper-muted);
+    padding-bottom: 12px;
+  }
+  /* El nombre a todo el ancho, cortado por el borde de abajo. */
+  .name {
+    font-size: calc((100vw - 2 * var(--m)) / 5.9);
+    line-height: 0.74;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+    font-weight: 600;
+    transform: translateY(18%);
+  }
+  .name span {
+    font-weight: 220;
+  }
+
+  @media (max-width: 899px) {
+    .cierre {
+      min-height: 72svh;
+    }
+    .top h2 {
+      font-size: 10vw;
+    }
+    .top .btn {
+      width: 100%;
+    }
+  }
+</style>

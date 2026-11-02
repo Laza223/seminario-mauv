@@ -1,0 +1,107 @@
+---
+// Lo tangible: la guía MAUV (impresa y en PDF) dibujada como el objeto que es, y lo demás que incluye el día.
+import Logo from './Logo.astro';
+
+const items = [
+  { title: 'La guía MAUV', text: 'Impresa y en PDF: toda la teoría del día para repasar cuando quieras.' },
+  { title: 'Coffee break', text: 'Café y algo para picar en el medio.' },
+  { title: 'Tu corte', text: 'Hecho ese mismo día, con lo que aprendiste.' },
+  { title: 'Un día con Mauv', text: 'Preguntás todo lo que quieras, en persona.' },
+];
+---
+
+<section class="llevas" aria-labelledby="llevas-title">
+  <div class="guide" aria-hidden="true">
+    <div class="cover">
+      <Logo class="glogo" />
+      <p class="gt">Guía de<br />perfeccionamiento</p>
+      <p class="gn">MAUV311</p>
+    </div>
+  </div>
+  <div class="text">
+    <h2 id="llevas-title" class="display">Te llevás</h2>
+    <ul>
+      {
+        items.map((i) => (
+          <li>
+            <h3>{i.title}</h3>
+            <p>{i.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .llevas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 7vw, 120px);
+    align-items: center;
+    padding: 0 var(--m) var(--gap-section);
+  }
+  .guide {
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    padding: clamp(40px, 6vw, 96px) 0;
+  }
+  /* La guía: una hoja A5 en papel con el logo, como el impreso que se llevan. */
+  .cover {
+    width: min(68%, 340px);
+    aspect-ratio: 148 / 210;
+    background: var(--paper);
+    color: var(--paper-ink);
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    padding: 28px;
+    transform: rotate(-4deg);
+  }
+  .cover :global(.glogo) {
+    width: 62%;
+    align-self: center;
+    justify-self: center;
+  }
+  .gt {
+    font-size: 0.9375rem;
+    line-height: 1.2;
+  }
+  .gn {
+    margin-top: 6px;
+    font-stretch: var(--wide);
+    font-weight: 620;
+    font-size: var(--t-md);
+  }
+  h2 {
+    font-size: var(--t-lg);
+    margin-bottom: 40px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px 32px;
+  }
+  h3 {
+    margin: 0 0 6px;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    font-weight: 620;
+  }
+
+  @media (max-width: 899px) {
+    .llevas {
+      grid-template-columns: 1fr;
+    }
+    .text {
+      order: -1;
+    }
+    ul {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

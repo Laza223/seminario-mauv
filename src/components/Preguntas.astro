@@ -1,0 +1,75 @@
+---
+// Preguntas como texto de lectura: todo contestado de un vistazo, sin acordeones.
+// `confirmar: true` = respuesta de ejemplo hasta que Mauv la confirme (en dev se marca en pantalla).
+import { event } from '../data/event';
+
+const faq = [
+  { q: '¿Tengo que llevar modelo?', a: 'No es obligatorio. Si traés, al final hacés tu corte aplicando lo visto.' },
+  { q: '¿Es práctico o teórico?', a: 'Teórico y visual: dos horas de teoría, un corte de demostración completo y, al final, tu corte con modelo.' },
+  { q: '¿Qué llevo?', a: 'Tus máquinas y tijeras para la parte práctica.', confirmar: true },
+  { q: '¿Sirve si recién arranco?', a: 'Es un perfeccionamiento: lo vas a aprovechar si ya cortás y tenés base.', confirmar: true },
+  { q: '¿Cómo pago?', a: 'Escribís por WhatsApp y te pasamos los datos para pagar.', confirmar: true },
+  { q: '¿Y si no puedo ir?', a: 'Avisanos por WhatsApp y vemos cómo lo resolvemos.', confirmar: true },
+  { q: '¿A qué hora termina?', a: 'Arranca a las 10 y dura el día entero.', confirmar: true },
+  { q: '¿Hay comida?', a: 'Sí: coffee break con café y algo para picar.' },
+  { q: '¿Dónde es?', a: `En ${event.venue}, ${event.street}, ${event.city} (Bs. As.).` },
+];
+const dev = import.meta.env.DEV;
+---
+
+<section class="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title" class="display">Preguntas</h2>
+  <div class="text">
+    {
+      faq.map((f) => (
+        <p class:list={{ pending: dev && f.confirmar }}>
+          <strong>{f.q}</strong> {f.a}
+        </p>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: 1fr 2.4fr;
+    gap: 40px;
+    padding: var(--gap-section) var(--m);
+    background: var(--surface);
+  }
+  h2 {
+    font-size: var(--t-lg);
+  }
+  .text {
+    columns: 2;
+    column-gap: 56px;
+  }
+  p {
+    break-inside: avoid;
+    margin-bottom: 22px;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  strong {
+    font-weight: 620;
+  }
+  .pending {
+    outline: 1px dashed #e0b400;
+    outline-offset: 4px;
+  }
+  .pending::after {
+    content: ' [CONFIRMAR]';
+    color: #e0b400;
+  }
+
+  @media (max-width: 899px) {
+    .faq {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .text {
+      columns: 1;
+    }
+  }
+</style>

@@ -1,0 +1,326 @@
+---
+// Héroe — "El nombre como monumento" (elegido en el checkpoint 1). El escenario queda fijo mientras el video IA
+// avanza con el scroll por debajo del nombre; la fecha, el precio y el botón se van al empezar a bajar y los toma
+// la barra fija. Mientras no haya frames del video, el fondo es la foto de su IG.
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import fallback from '../assets/ig/corte-10.jpg';
+import { event, money, waHref } from '../data/event';
+import { sequence } from '../data/sequence';
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="stage">
+    <div class="media" aria-hidden="true">
+      {
+        sequence ? (
+          <>
+            <img class="pic pic--seq" src={sequence.poster} alt="" width="720" height="1280" fetchpriority="high" />
+            <canvas class="seq" data-seq={sequence.base} data-count={sequence.count} />
+          </>
+        ) : (
+          <Image src={fallback} alt="" widths={[480, 720, 1080]} sizes="100vw" loading="eager" fetchpriority="high" class="pic" />
+        )
+      }
+    </div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <header class="bar">
+      <a href="#top" class="brand" aria-label="MAUV311"><Logo class="logo" /></a>
+      <a class="btn btn--bar" href={waHref} data-cta="bar">Reservar</a>
+    </header>
+
+    <h1 id="hero-title" class="display">
+      <span class="k">Perfeccionamiento</span>
+      <span class="n"><span class="n1">MAUV</span><span class="n2">311</span></span>
+    </h1>
+
+    <div class="info" data-fade>
+      <p class="when">{event.dayLabel}<br />{event.timeLabel} · {event.venue}, {event.city}</p>
+      <div class="act">
+        <p class="sub">Un día entero de fade, contornos y estructura. Explicado técnico y en criollo.</p>
+        <div class="buy">
+          <p class="price">
+            <s class="price-old" aria-label={`Antes ${money(event.anchorPrice)}`}>{money(event.anchorPrice)}</s>
+            <strong>{money(event.price)}</strong>
+          </p>
+          <a class="btn" href={waHref} data-cta="hero">Reservar mi lugar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 180svh;
+  }
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 600px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    /* Alto de una línea del nombre: el bloque de info se apoya arriba de él. */
+    --name: calc((100vw - 2 * var(--m)) / 5.9);
+    --name-h: calc(var(--name) * 0.74);
+  }
+  .media,
+  .scrim,
+  .seq {
+    position: absolute;
+    inset: 0;
+  }
+  .pic,
+  .seq {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+  .media {
+    background: #000;
+  }
+  /* En horizontal el video vertical va entero, como una columna centrada del ancho justo del clip,
+     con los costados fundidos en un negro igual al suyo: sin tira de bordes duros ni la tijera cortada en seco. */
+  @media (orientation: landscape) {
+    .media {
+      background: #0a0a0a;
+    }
+    .pic--seq,
+    .seq {
+      width: auto;
+      height: 100%;
+      aspect-ratio: 9 / 16;
+      mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); /* taste-skill-ignore: fundido de los bordes del clip vertical */
+    }
+    .pic--seq {
+      margin-inline: auto;
+    }
+    .seq {
+      right: auto;
+      left: 50%;
+      translate: -50% 0;
+    }
+  }
+  .seq {
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+  .seq[data-ready] {
+    opacity: 1;
+  }
+  /* Velo neutro solo donde va texto: la única excepción a "sin degradés". */
+  .scrim {
+    background: linear-gradient( /* taste-skill-ignore: velo neutro bajo el texto, sobre el video */
+      to bottom,
+      rgb(11 11 11 / 0.55),
+      rgb(11 11 11 / 0.1) 28%,
+      rgb(11 11 11 / 0.2) 50%,
+      rgb(11 11 11 / 0.92)
+    );
+  }
+
+  .bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px var(--m);
+  }
+  .brand :global(.logo) {
+    width: 88px;
+    color: var(--ink);
+  }
+  .btn--bar {
+    --h: 44px;
+    padding: 0 20px;
+    font-size: var(--t-sm);
+  }
+
+  h1 {
+    position: relative;
+    z-index: 1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px var(--m) 0;
+  }
+  .k {
+    font-size: var(--t-md);
+    font-weight: 380;
+    letter-spacing: 0.32em;
+    line-height: 1;
+  }
+  .n {
+    font-size: var(--name);
+    font-weight: 600;
+    line-height: 0.74;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+  .n2 {
+    font-weight: 220;
+  }
+
+  .info {
+    position: absolute;
+    z-index: 1;
+    inset: auto 0 calc(var(--name-h) + 24px);
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 32px;
+    padding: 0 var(--m);
+  }
+  .when {
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    line-height: 1.25;
+  }
+  .act {
+    width: min(34ch, 100%);
+    display: grid;
+    gap: 14px;
+  }
+  .sub {
+    font-size: var(--t-body);
+    line-height: 1.45;
+  }
+  .buy {
+    display: grid;
+    gap: 14px;
+  }
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: var(--t-md);
+  }
+  .price strong {
+    font-weight: 640;
+    font-stretch: 112%;
+  }
+
+  /* Entrada en CSS puro: corre sin esperar a GSAP y con reduced-motion queda en 0,01 ms (global.css). */
+  .k,
+  .n1,
+  .n2,
+  .info > * {
+    animation: rise 1s var(--ease) both;
+  }
+  .n1 {
+    animation-delay: 0.08s;
+  }
+  .n2 {
+    animation-delay: 0.16s;
+  }
+  .info > :first-child {
+    animation-delay: 0.24s;
+  }
+  .info > :last-child {
+    animation-delay: 0.32s;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(36px);
+    }
+  }
+
+  /* Celu: el nombre se apila (MAUV / 311) para ser de verdad monumental en 390 px. */
+  @media (max-width: 899px) {
+    .stage {
+      --name: calc((100vw - 2 * var(--m)) / 3.8);
+      --name-h: calc(var(--name) * 0.74 * 2 + 4px);
+    }
+    .brand :global(.logo) {
+      width: 74px;
+    }
+    .k {
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+    }
+    .n {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .info {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+      bottom: calc(var(--name-h) + 20px);
+    }
+    .when {
+      font-size: 1.25rem;
+    }
+    .sub {
+      font-size: 1rem;
+    }
+    .buy {
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+    .price {
+      flex-direction: column;
+      gap: 0;
+      font-size: var(--t-md);
+      line-height: 1.15;
+    }
+    .price s {
+      font-size: var(--t-sm);
+    }
+  }
+  /* Celu acostado: el nombre apilado no entra en el alto; vuelve a una línea, como en escritorio. */
+  @media (max-width: 899px) and (orientation: landscape) {
+    .stage {
+      --name: calc((100vw - 2 * var(--m)) / 5.9);
+      --name-h: calc(var(--name) * 0.74);
+    }
+    .n {
+      flex-direction: row;
+      gap: 0;
+    }
+    .act {
+      width: min(44ch, 100%);
+    }
+  }
+</style>
+
+<script>
+  import { mountSequence, sequenceAllowed } from '../scripts/sequence';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const canvas = hero?.querySelector<HTMLCanvasElement>('[data-seq]');
+  if (hero && sequenceAllowed()) {
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
+    gsap.registerPlugin(ScrollTrigger);
+
+    const seq = canvas ? mountSequence(canvas) : null;
+    // Los primeros frames corren solos al cargar (la tijera cierra); el resto lo maneja el scroll.
+    const intro = 0.18;
+    const state = { p: 0 };
+    if (seq) {
+      gsap.to(state, { p: intro, duration: 1.8, ease: 'power2.out', onUpdate: () => seq.seek(state.p) });
+    }
+    ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 0.3,
+      onUpdate: (st) => seq?.seek(intro + st.progress * (1 - intro)),
+    });
+    gsap.to(hero.querySelector('[data-fade]'), {
+      opacity: 0,
+      y: -32,
+      ease: 'power1.in',
+      scrollTrigger: { trigger: hero, start: 'top top', end: '+=35%', scrub: true },
+    });
+  }
+</script>

@@ -1,0 +1,154 @@
+@import '@fontsource-variable/archivo/wdth.css';
+
+:root {
+  /* Marca monocroma: un suelo, una tinta, un gris. El "acento" es la tinta misma (botón blanco sobre negro). */
+  --bg: #0b0b0b;
+  --surface: #161616;
+  --ink: #f3f2ef;
+  --muted: #a9a8a4;
+  --paper: #f3f2ef;
+  --paper-ink: #0b0b0b;
+  --paper-muted: #55544f;
+
+  --font: 'Archivo Variable', system-ui, sans-serif;
+  /* Cinco pasos de tipo. */
+  --t-sm: 0.9375rem; /* 15px */
+  --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem); /* 16–17px */
+  --t-md: clamp(1.25rem, 1rem + 1.1vw, 1.75rem); /* 20–28px */
+  --t-lg: clamp(2.25rem, 1.2rem + 4.6vw, 4.75rem); /* 36–76px */
+  --t-xl: clamp(4rem, 1rem + 15vw, 15rem);
+
+  --wide: 125%; /* eje de ancho de Archivo: el expandido de la story */
+  --m: clamp(20px, 2.2vw, 32px); /* margen exterior, igual a ambos lados */
+  /* Padding arriba y abajo de cada sección: entre dos secciones suman 80–240 px. */
+  --gap-section: clamp(40px, 8.4vw, 120px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+canvas,
+video {
+  display: block;
+  max-width: 100%;
+}
+/* Los width/height de Astro reservan el lugar; el alto real lo decide el aspect-ratio de cada foto. */
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure,
+blockquote {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+/* Display: expandido como la story de Mauv. */
+.display {
+  font-stretch: var(--wide);
+  font-weight: 560;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+
+.btn {
+  --h: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: var(--h);
+  padding: 0 28px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--bg);
+  font: inherit;
+  font-weight: 640;
+  font-stretch: 112%;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+.btn:hover {
+  background: #fff;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn--paper {
+  background: var(--paper-ink);
+  color: var(--paper);
+}
+.btn--paper:hover {
+  background: #000;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.price-old {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

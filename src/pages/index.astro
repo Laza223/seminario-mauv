@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroMonument from '../components/HeroMonument.astro';
+import Domingo from '../components/Domingo.astro';
+import ParaVos from '../components/ParaVos.astro';
+import Programa from '../components/Programa.astro';
+import ElDia from '../components/ElDia.astro';
+import Mauv from '../components/Mauv.astro';
+import TeLlevas from '../components/TeLlevas.astro';
+import Entrada from '../components/Entrada.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Cierre from '../components/Cierre.astro';
+import StickyBar from '../components/StickyBar.astro';
+---
+
+<Base>
+  <main id="top">
+    <HeroMonument />
+    <Domingo />
+    <ParaVos />
+    <Programa />
+    <ElDia />
+    <Mauv />
+    <TeLlevas />
+    <Entrada />
+    <Preguntas />
+  </main>
+  <Cierre />
+  <StickyBar />
+</Base>
+
+<script>
+  import '../scripts/motion';
+</script>

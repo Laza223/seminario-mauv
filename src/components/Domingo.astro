@@ -1,0 +1,124 @@
+---
+// Escasez y urgencia REALES: el studio cierra los domingos (su bio), la cuenta regresiva al inicio y los cupos de event.ts.
+import { Image } from 'astro:assets';
+import photo from '../assets/ig/corte-03.jpg';
+import { event } from '../data/event';
+---
+
+<section class="domingo" aria-labelledby="domingo-title">
+  <div class="text">
+    <h2 id="domingo-title" class="display">Domingo cerrado.</h2>
+    <p class="lede">
+      Los domingos el studio no abre. El 22 abre para un solo grupo: el que se anota. Somos pocos a propósito, para que cada duda tenga respuesta.
+    </p>
+
+    <div class="count" data-ui data-countdown={event.startsAt} aria-live="off">
+      <p class="sr-only">Faltan para el {event.dayLabel} a las {event.timeLabel}:</p>
+      <dl>
+        <div><dt>días</dt><dd data-u="d">--</dd></div>
+        <div><dt>horas</dt><dd data-u="h">--</dd></div>
+        <div><dt>min</dt><dd data-u="m">--</dd></div>
+        <div><dt>seg</dt><dd data-u="s">--</dd></div>
+      </dl>
+    </div>
+
+    <p class="seats">
+      Quedan <strong>{event.seats.left}</strong> de {event.seats.total} lugares
+    </p>
+  </div>
+
+  <figure class="photo">
+    <Image src={photo} alt="Corte texturizado con fade, hecho en Mauv Studio" widths={[360, 640]} sizes="(min-width: 900px) 34vw, 70vw" />
+  </figure>
+</section>
+
+<style>
+  .domingo {
+    background: var(--paper);
+    color: var(--paper-ink);
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
+    padding: clamp(96px, 12vw, 180px) var(--m);
+  }
+  h2 {
+    font-size: var(--t-lg);
+    max-width: 12ch;
+  }
+  .lede {
+    margin-top: 28px;
+    max-width: 44ch;
+    font-size: var(--t-body);
+  }
+  dl {
+    display: flex;
+    gap: clamp(18px, 3vw, 40px);
+    margin: 44px 0 0;
+  }
+  dl div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  dd {
+    margin: 0;
+    font-size: var(--t-lg);
+    font-weight: 300;
+    font-stretch: var(--wide);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  dt {
+    margin-top: 6px;
+    font-size: var(--t-sm);
+    color: var(--paper-muted);
+  }
+  .seats {
+    margin-top: 36px;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+  }
+  .seats strong {
+    font-weight: 700;
+  }
+  .photo img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  @media (max-width: 899px) {
+    .domingo {
+      grid-template-columns: 1fr;
+    }
+    .photo {
+      width: 72%;
+      justify-self: end;
+    }
+    dl {
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<script>
+  // Cuenta regresiva al instante real de inicio (con -03:00). Sin JS quedan los guiones y la fecha sigue arriba.
+  const el = document.querySelector<HTMLElement>('[data-countdown]');
+  if (el?.dataset.countdown) {
+    const target = Date.parse(el.dataset.countdown);
+    const units = Object.fromEntries(
+      Array.from(el.querySelectorAll<HTMLElement>('[data-u]')).map((n) => [n.dataset.u ?? '', n]),
+    );
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const tick = () => {
+      const left = Math.max(0, target - Date.now());
+      const s = Math.floor(left / 1000);
+      units.d.textContent = String(Math.floor(s / 86400));
+      units.h.textContent = pad(Math.floor((s % 86400) / 3600));
+      units.m.textContent = pad(Math.floor((s % 3600) / 60));
+      units.s.textContent = pad(s % 60);
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>

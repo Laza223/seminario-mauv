@@ -1,0 +1,115 @@
+---
+// El día, hora por hora: especificidad para bajar el miedo a lo desconocido. Horarios reales del mensaje de Mauv.
+import { Image } from 'astro:assets';
+import photo from '../assets/ig/corte-05.jpg';
+
+const pasos = [
+  { at: '10:00', title: 'Teoría', text: 'Dos horas de teoría pura, explicada a nivel técnico y en criollo.' },
+  { at: '12:00', title: 'Break', text: 'Café y algo para picar.' },
+  { at: 'Después', title: 'Demo', text: 'Mauv hace un corte completo con lo que vimos. Cada detalle explicado, cada duda respondida.' },
+  { at: 'Al final', title: 'Tu corte', text: 'Hacés un corte a elección con tu modelo y aplicás lo visto.' },
+];
+---
+
+<section class="dia" id="el-dia" aria-labelledby="dia-title">
+  <div class="col">
+    <h2 id="dia-title" class="display" data-reveal>Tu domingo</h2>
+    <p class="lede" data-reveal>Hora por hora, para que sepas qué pasa y cuándo.</p>
+    <ol data-stagger>
+      {
+        pasos.map((p) => (
+          <li>
+            <span class="at">{p.at}</span>
+            <div>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <figure class="photo">
+    <Image
+      src={photo}
+      alt="Mauv cortando con tijera en su studio"
+      widths={[360, 640]}
+      sizes="(min-width: 900px) 34vw, 80vw"
+      data-parallax
+    />
+  </figure>
+</section>
+
+<style>
+  .dia {
+    background: var(--paper);
+    color: var(--paper-ink);
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(40px, 7vw, 120px);
+    padding: var(--gap-section) var(--m);
+  }
+  h2 {
+    font-size: var(--t-lg);
+  }
+  .lede {
+    margin: 18px 0 56px;
+    font-size: var(--t-md);
+    line-height: 1.35;
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 40px;
+  }
+  li {
+    display: grid;
+    grid-template-columns: minmax(5.5em, 9rem) 1fr;
+    gap: 24px;
+    align-items: baseline;
+  }
+  .at {
+    font-size: var(--t-md);
+    font-stretch: var(--wide);
+    font-weight: 300;
+  }
+  h3 {
+    margin: 0 0 6px;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    font-weight: 620;
+  }
+  li p {
+    max-width: 40ch;
+  }
+  .photo {
+    position: sticky;
+    top: var(--m);
+    align-self: start;
+    overflow: hidden;
+  }
+  .photo img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  @media (max-width: 699px) {
+    .dia {
+      grid-template-columns: 1fr;
+    }
+    .lede {
+      margin-bottom: 36px;
+    }
+    li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+    .photo {
+      position: static;
+      width: 80%;
+    }
+  }
+</style>

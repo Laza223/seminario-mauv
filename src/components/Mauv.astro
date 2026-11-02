@@ -1,0 +1,106 @@
+---
+// Quién te enseña: autoridad mostrada con sus trabajos, no dicha. Bio [CONFIRMAR] con Mauv.
+import { Image } from 'astro:assets';
+import a from '../assets/ig/corte-06.jpg';
+import b from '../assets/ig/corte-10.jpg';
+import c from '../assets/ig/corte-08.jpg';
+import { igHref, event } from '../data/event';
+
+const trabajos = [
+  { img: a, alt: 'Corte con rulos definidos y laterales bajos' },
+  { img: b, alt: 'Mauv marcando un fade con la máquina' },
+  { img: c, alt: 'Fade alto con barba perfilada' },
+];
+---
+
+<section class="mauv" aria-labelledby="mauv-title">
+  <div class="text">
+    <h2 id="mauv-title" class="display">Mauv</h2>
+    <p class="bio">
+      Corta todos los días en su studio de {event.city}, {event.street}. Lo que ves en su Instagram es lo que vas a
+      entender cómo se hace.
+    </p>
+    <blockquote>“Crear es parte de cortar el cabello.”</blockquote>
+    <a class="more" href={igHref} target="_blank" rel="noopener">Ver más en @{event.instagram}</a>
+  </div>
+  <ul class="works">
+    {
+      trabajos.map((t) => (
+        <li>
+          <Image src={t.img} alt={t.alt} widths={[360, 640]} sizes="(min-width: 900px) 18vw, 32vw" />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .mauv > * {
+    min-width: 0;
+  }
+  .mauv {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: clamp(40px, 6vw, 96px);
+    align-items: end;
+    padding: var(--gap-section) var(--m);
+  }
+  /* El nombre llena su columna (1 de 2,5 partes) sin pasarse a la de las fotos. */
+  h2 {
+    font-size: min(var(--t-xl), calc((100vw - 2 * var(--m) - 6vw) / 2.5 / 3.9));
+    line-height: 0.9;
+  }
+  .bio {
+    margin-top: 32px;
+    max-width: 36ch;
+    font-size: var(--t-body);
+  }
+  blockquote {
+    margin: 36px 0 0;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    line-height: 1.25;
+    max-width: 22ch;
+  }
+  .more {
+    display: inline-block;
+    margin-top: 28px;
+    font-size: var(--t-sm);
+    text-underline-offset: 4px;
+  }
+  .more:hover {
+    text-decoration-thickness: 2px;
+  }
+  .works {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    align-items: end;
+  }
+  .works li:nth-child(2) {
+    transform: translateY(-48px);
+  }
+  .works img {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+  }
+
+  @media (max-width: 899px) {
+    .mauv {
+      grid-template-columns: 1fr;
+    }
+    h2 {
+      font-size: calc((100vw - 2 * var(--m)) / 3.8);
+    }
+    .works {
+      gap: 8px;
+    }
+    .works li:nth-child(2) {
+      transform: translateY(-24px);
+    }
+  }
+</style>

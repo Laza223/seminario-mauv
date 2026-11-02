@@ -1,0 +1,80 @@
+---
+// Barra fija abajo en el celu: precio + cupos + botón siempre a mano después del héroe (en el cierre se esconde).
+import { event, money, waHref } from '../data/event';
+---
+
+<div class="sticky" data-sticky hidden>
+  <p>
+    <strong>{money(event.price)}</strong>
+    <span>Quedan {event.seats.left} lugares</span>
+  </p>
+  <a class="btn" href={waHref} data-cta="sticky">Reservar</a>
+</div>
+
+<style>
+  .sticky {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px var(--m) calc(12px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    transform: translateY(110%);
+    transition: transform 0.35s var(--ease);
+  }
+  .sticky[data-on] {
+    transform: none;
+  }
+  .sticky[hidden] {
+    display: none;
+  }
+  p {
+    display: grid;
+    line-height: 1.2;
+  }
+  strong {
+    font-size: var(--t-md);
+    font-stretch: 112%;
+  }
+  span {
+    font-size: var(--t-sm);
+    color: var(--muted);
+  }
+  .btn {
+    --h: 48px;
+    flex: 0 0 auto;
+  }
+  @media (min-width: 900px) {
+    .sticky {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Aparece cuando la info del héroe ya se fue y desaparece cuando se ve el cierre (que tiene su propio botón).
+  const bar = document.querySelector<HTMLElement>('[data-sticky]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const end = document.querySelector<HTMLElement>('.cierre');
+  if (bar && hero) {
+    bar.hidden = false;
+    let pastHero = false;
+    let atEnd = false;
+    const sync = () => bar.toggleAttribute('data-on', pastHero && !atEnd);
+    const onScroll = () => {
+      pastHero = scrollY > innerHeight * 0.35;
+      sync();
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    if (end) {
+      new IntersectionObserver(([e]) => {
+        atEnd = e.isIntersecting;
+        sync();
+      }).observe(end);
+    }
+  }
+</script>

@@ -1,0 +1,102 @@
+---
+// Identificación y calificación: el dolor concreto del barbero que aprendió con videos, y a quién no le sirve.
+import { Image } from 'astro:assets';
+import photo from '../assets/ig/corte-07.jpg';
+
+const si = [
+  'Ya cortás y querés que el fade te salga parejo siempre, no a veces.',
+  'Aprendiste mirando videos y te faltan los fundamentos que nadie explica.',
+  'Querés que el corte se vea igual de bien en el sillón que en el reel.',
+  'Querés entender por qué un corte funciona, no copiarlo.',
+];
+const no = [
+  'Nunca agarraste una máquina: esto es perfeccionamiento, se viene con base.',
+  'Buscás un truco suelto para un video: acá se entiende el corte entero.',
+];
+---
+
+<section class="vos" aria-labelledby="vos-title">
+  <div class="head">
+    <h2 id="vos-title" class="display" data-reveal>¿Es para vos?</h2>
+    <figure class="photo" data-reveal>
+      <Image src={photo} alt="Corte con fade y textura arriba, hecho por Mauv" widths={[360, 640]} sizes="(min-width: 900px) 26vw, 60vw" />
+    </figure>
+  </div>
+
+  <div class="lists">
+    <div>
+      <h3>Sí, si…</h3>
+      <ul class="yes" data-stagger>
+        {si.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+    <div>
+      <h3>No, si…</h3>
+      <ul class="no" data-stagger>
+        {no.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vos {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: clamp(40px, 7vw, 120px);
+    padding: var(--gap-section) var(--m);
+  }
+  .head {
+    display: grid;
+    gap: 40px;
+    align-content: start;
+  }
+  h2 {
+    font-size: var(--t-lg);
+  }
+  .photo img {
+    width: min(100%, 380px);
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .lists {
+    display: grid;
+    gap: 64px;
+    align-content: start;
+  }
+  h3 {
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 22px;
+  }
+  li {
+    font-size: var(--t-md);
+    line-height: 1.3;
+  }
+  .no li {
+    color: var(--muted);
+  }
+
+  @media (max-width: 899px) {
+    .vos {
+      grid-template-columns: 1fr;
+    }
+    .head {
+      gap: 28px;
+    }
+    .photo img {
+      width: 64%;
+    }
+    li {
+      font-size: 1.25rem;
+    }
+  }
+</style>

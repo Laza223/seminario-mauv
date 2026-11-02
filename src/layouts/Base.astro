@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import { event, mapsHref } from '../data/event';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = `${event.name} · ${event.dayLabel} · ${event.city}`,
+  description = `Un día entero de fade, contornos y estructura con Mauv, en ${event.venue} (${event.street}, ${event.city}). ${event.dayLabel}, ${event.timeLabel}.`,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+const eventLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationEvent',
+  name: event.name,
+  description,
+  startDate: event.startsAt,
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  location: {
+    '@type': 'Place',
+    name: event.venue,
+    hasMap: mapsHref,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: event.street,
+      addressLocality: event.city,
+      addressRegion: event.region,
+      addressCountry: 'AR',
+    },
+  },
+  organizer: { '@type': 'Person', name: 'Mauv', url: `https://www.instagram.com/${event.instagram}/` },
+  offers: {
+    '@type': 'Offer',
+    price: event.price,
+    priceCurrency: 'ARS',
+    availability: event.seats.left > 0 ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/SoldOut',
+    url: canonical,
+  },
+};
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og.jpg', Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/seq/v2/poster.webp" as="image" fetchpriority="high" />
+    <script type="application/ld+json" set:html={JSON.stringify(eventLd)} />
+    {import.meta.env.PROD && <script defer src="/_vercel/insights/script.js" />}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

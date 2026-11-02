@@ -1,0 +1,152 @@
+---
+// Programa: una palabra por tema, grande, con un corte real de Mauv al lado. Las filas alternan el lado de la foto.
+import { Image } from 'astro:assets';
+import fade from '../assets/ig/corte-04.jpg';
+import contornos from '../assets/ig/corte-08.jpg';
+import fundamentos from '../assets/ig/corte-02.jpg';
+import conexiones from '../assets/ig/corte-07.jpg';
+import estructuras from '../assets/ig/corte-03.jpg';
+import styling from '../assets/ig/corte-11.jpg';
+
+const temas = [
+  { word: 'Fade', img: fade, alt: 'Fade bajo con barba, de perfil', text: 'De salón y para redes: el que funciona en el día a día y el que se luce en cámara.' },
+  { word: 'Contornos', img: contornos, alt: 'Corte con contornos marcados y barba perfilada', text: 'La marcación correcta: dónde va la línea y por qué, para que el corte cierre prolijo.' },
+  { word: 'Fundamentos', img: fundamentos, alt: 'Corte con volumen arriba y capas, de perfil', text: 'Divisiones, secciones, capas y graduaciones: la base que ordena cualquier corte.' },
+  { word: 'Conexiones', img: conexiones, alt: 'Mullet texturizado conectado con un fade', text: 'Cómo unir arriba con los costados sin escalones.' },
+  { word: 'Estructuras', img: estructuras, alt: 'Crop texturizado con fade, de perfil', text: 'Leer la cabeza y armar la forma antes de agarrar la máquina.' },
+  { word: 'Styling', img: styling, alt: 'Mullet peinado y terminado', text: 'El terminado: peinar y fijar para que el corte se vea como lo pensaste.' },
+];
+---
+
+<section class="programa" id="programa" aria-labelledby="programa-title">
+  <div class="intro">
+    <h2 id="programa-title" class="display" data-reveal>El programa</h2>
+    <p data-reveal>Seis temas que vas a dominar, explicados a nivel técnico y en criollo, y aplicados en un corte completo delante tuyo.</p>
+  </div>
+
+  <ol class="rows">
+    {
+      temas.map((t) => (
+        <li class="row">
+          <div class="copy" data-reveal>
+            <h3 class="display word" style={`--chars: ${t.word.length}`}>{t.word}</h3>
+            <p>{t.text}</p>
+          </div>
+          <figure class="pic">
+            <Image src={t.img} alt={t.alt} widths={[360, 640]} sizes="(min-width: 700px) 18vw, 64vw" data-parallax />
+          </figure>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .programa {
+    padding: 0 var(--m) var(--gap-section);
+  }
+  .intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+    margin-bottom: clamp(56px, 7vw, 112px);
+  }
+  .intro h2 {
+    font-size: var(--t-lg);
+    max-width: 11ch;
+  }
+  .intro p {
+    max-width: 38ch;
+    font-size: var(--t-md);
+    line-height: 1.35;
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(48px, 5vw, 72px);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 18vw);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+  }
+  .row > * {
+    min-width: 0;
+  }
+  /* Las filas pares llevan la foto a la izquierda. */
+  .row:nth-child(even) {
+    grid-template-columns: minmax(0, 18vw) 1fr;
+  }
+  .row:nth-child(even) .pic {
+    order: -1;
+  }
+  .row:nth-child(even) .copy {
+    justify-self: end;
+    text-align: right;
+  }
+  .row:nth-child(even) .copy p {
+    margin-left: auto;
+  }
+  .pic {
+    overflow: hidden;
+  }
+  .pic img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .copy {
+    display: grid;
+    gap: 20px;
+  }
+  /* La palabra llena su columna: el tamaño sale de la cantidad de letras. */
+  .word {
+    font-size: min(calc((70vw - 3 * var(--m)) / (var(--chars) * 0.97)), var(--t-xl));
+    line-height: 0.86;
+  }
+  .copy p {
+    max-width: 36ch;
+    font-size: var(--t-md);
+    line-height: 1.35;
+  }
+
+  @media (max-width: 699px) {
+    .intro {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .row,
+    .row:nth-child(even) {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .row:nth-child(even) .pic {
+      order: 0;
+      justify-self: end;
+    }
+    .row .copy,
+    .row:nth-child(even) .copy {
+      justify-self: stretch;
+      text-align: left;
+    }
+    .row:nth-child(even) .copy p {
+      margin-left: 0;
+    }
+    .pic {
+      width: 64%;
+    }
+    .word {
+      font-size: min(calc((100vw - 2 * var(--m)) / (var(--chars) * 0.97)), 26vw);
+    }
+    .copy {
+      gap: 12px;
+    }
+    .copy p {
+      font-size: var(--t-body);
+    }
+  }
+</style>
