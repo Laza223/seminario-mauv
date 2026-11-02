@@ -13,7 +13,7 @@ export const event = {
   hours: 6,
   price: 90_000,
   anchorPrice: 145_000,
-  seats: { total: 6, left: 6 },
+  seats: { total: 6, left: 2 },
   venue: 'Mauv Studio',
   street: 'Mitre 2130',
   city: 'Luján',
