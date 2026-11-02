@@ -1,0 +1,70 @@
+---
+// Prueba antes del precio: lo que dicen sus alumnos, textual y sin nombres. Mensajes de Mauv; nada se edita ni se inventa.
+// Las citas van a 32 px o menos: son texto de lectura, no títulos.
+const [destacada, ...resto] = [
+  'Yo venía cortando hace un tiempo, pero la conexión de arriba con los costados me costaba bastante. Cuando me explicó cómo trabajar esa parte entendí dónde me estaba equivocando.',
+  'Lo bueno es que le podés preguntar sin vergüenza. Había cosas re básicas que hacía de memoria y nunca había entendido bien por qué.',
+  'Había visto una banda de videos de fade y siempre me quedaba alguna marca. Verlo trabajar en persona y poder frenarlo para preguntar me sirvió un montón.',
+  'Pensé que iba a ser todo máquina y degradado, pero lo de las secciones y la forma de la cabeza fue lo que más me quedó. Ahora antes de arrancar pienso un poco más el corte.',
+  'Explica tranquilo, no da por hecho que ya sabés todo. Yo me fui con varias cosas para practicar, sobre todo de tijera, que era donde estaba más flojo.',
+];
+---
+
+<section class="dicen" aria-labelledby="dicen-title">
+  <h2 id="dicen-title" class="display">Lo que dicen sus alumnos</h2>
+
+  <figure class="big">
+    <blockquote data-mask>“{destacada}”</blockquote>
+  </figure>
+
+  <div class="more">
+    {
+      resto.map((q) => (
+        <figure>
+          <blockquote data-mask>“{q}”</blockquote>
+              </figure>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .dicen {
+    background: var(--paper);
+    color: var(--paper-ink);
+    display: grid;
+    gap: clamp(32px, 5vw, 72px);
+    padding: var(--gap-section) var(--m);
+  }
+  h2 {
+    font-size: var(--t-lg);
+    max-width: 14ch;
+  }
+  blockquote {
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .big blockquote {
+    max-width: 36ch;
+    font-size: clamp(1.375rem, 1rem + 1.4vw, 2rem);
+    font-stretch: 112%;
+    font-weight: 560;
+    line-height: 1.15;
+  }
+  .more {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(28px, 4vw, 56px) clamp(32px, 6vw, 96px);
+  }
+  .more blockquote {
+    max-width: 38ch;
+    font-size: var(--t-md);
+    line-height: 1.35;
+  }
+
+  @media (max-width: 899px) {
+    .more {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

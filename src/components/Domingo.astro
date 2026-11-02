@@ -1,7 +1,7 @@
 ---
 // Escasez y urgencia REALES: el studio cierra los domingos (su bio), la cuenta regresiva al inicio y los cupos de event.ts.
 import { Image } from 'astro:assets';
-import photo from '../assets/ig/corte-03.jpg';
+import photo from '../assets/ig/foto-03.jpg';
 import { event } from '../data/event';
 ---
 
@@ -9,7 +9,7 @@ import { event } from '../data/event';
   <div class="text">
     <h2 id="domingo-title" class="display">Domingo cerrado.</h2>
     <p class="lede">
-      Los domingos el studio no abre. El 22 abre para un solo grupo: el que se anota. Somos pocos a propósito, para que cada duda tenga respuesta.
+      Los domingos el studio no abre. El 22 abre para un solo grupo: el que se anota. Son {event.seats.total} lugares, a propósito: así Mauv mira el corte de cada uno y cada duda tiene respuesta.
     </p>
 
     <div class="count" data-ui data-countdown={event.startsAt} aria-live="off">
@@ -22,13 +22,13 @@ import { event } from '../data/event';
       </dl>
     </div>
 
-    <p class="seats">
-      Quedan <strong>{event.seats.left}</strong> de {event.seats.total} lugares
+    <p class="seats" data-seats>
+      <span class="live" aria-hidden="true"></span>Quedan <strong>{event.seats.left}</strong> de {event.seats.total} lugares
     </p>
   </div>
 
   <figure class="photo">
-    <Image src={photo} alt="Corte texturizado con fade, hecho en Mauv Studio" widths={[360, 640]} sizes="(min-width: 900px) 34vw, 70vw" />
+    <Image src={photo} alt="Corte con flequillo recto y fade, de perfil" widths={[480, 800]} sizes="(min-width: 900px) 34vw, 70vw" />
   </figure>
 </section>
 
@@ -81,6 +81,43 @@ import { event } from '../data/event';
   .seats strong {
     font-weight: 700;
   }
+  /* Punto de "disponible ahora": late solo mientras se ve (lo prende el script) y se queda quieto con reduced-motion. */
+  .live {
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: var(--paper-ink);
+  }
+  .live::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--paper-ink);
+    opacity: 0;
+    animation: ping 2.4s var(--ease) infinite paused;
+  }
+  [data-live] .live::after {
+    animation-play-state: running;
+  }
+  @keyframes ping {
+    from {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live::after {
+      animation: none;
+    }
+  }
   .photo img {
     width: 100%;
     aspect-ratio: 4 / 5;
@@ -110,15 +147,35 @@ import { event } from '../data/event';
       Array.from(el.querySelectorAll<HTMLElement>('[data-u]')).map((n) => [n.dataset.u ?? '', n]),
     );
     const pad = (n: number) => String(n).padStart(2, '0');
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Solo el dígito que cambió se mueve: baja desde arriba, corto.
+    const set = (n: HTMLElement, value: string, animate: boolean) => {
+      if (n.textContent === value) return;
+      n.textContent = value;
+      if (animate && !calm) {
+        n.animate([{ transform: 'translateY(-35%)', opacity: 0 }, { transform: 'none', opacity: 1 }], {
+          duration: 220,
+          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        });
+      }
+    };
+    let first = true;
     const tick = () => {
       const left = Math.max(0, target - Date.now());
       const s = Math.floor(left / 1000);
-      units.d.textContent = String(Math.floor(s / 86400));
-      units.h.textContent = pad(Math.floor((s % 86400) / 3600));
-      units.m.textContent = pad(Math.floor((s % 3600) / 60));
-      units.s.textContent = pad(s % 60);
+      set(units.d, String(Math.floor(s / 86400)), !first);
+      set(units.h, pad(Math.floor((s % 86400) / 3600)), !first);
+      set(units.m, pad(Math.floor((s % 3600) / 60)), !first);
+      set(units.s, pad(s % 60), !first);
+      first = false;
     };
     tick();
     setInterval(tick, 1000);
+  }
+
+  // El punto de los cupos solo late mientras la línea está a la vista.
+  const seats = document.querySelector<HTMLElement>('[data-seats]');
+  if (seats) {
+    new IntersectionObserver(([e]) => seats.toggleAttribute('data-live', e.isIntersecting)).observe(seats);
   }
 </script>

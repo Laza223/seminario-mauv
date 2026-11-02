@@ -4,8 +4,9 @@ import Logo from './Logo.astro';
 
 const items = [
   { title: 'La guía MAUV', text: 'Impresa y en PDF: toda la teoría del día para repasar cuando quieras.' },
-  { title: 'Coffee break', text: 'Café y algo para picar en el medio.' },
+  { title: 'Certificado', text: 'Para sumar a tu trabajo y mostrarlo.' },
   { title: 'Tu corte', text: 'Hecho ese mismo día, con lo que aprendiste.' },
+  { title: 'Coffee break', text: 'Café y algo para picar en el medio.' },
   { title: 'Un día con Mauv', text: 'Preguntás todo lo que quieras, en persona.' },
 ];
 ---
@@ -85,6 +86,10 @@ const items = [
     grid-template-columns: 1fr 1fr;
     gap: 36px 32px;
   }
+  /* Cinco ítems en dos columnas: el último ocupa el ancho entero. */
+  li:last-child {
+    grid-column: 1 / -1;
+  }
   h3 {
     margin: 0 0 6px;
     font-size: var(--t-md);
@@ -102,6 +107,9 @@ const items = [
     ul {
       grid-template-columns: 1fr;
       gap: 24px;
+    }
+    li:last-child {
+      grid-column: auto;
     }
   }
 </style>

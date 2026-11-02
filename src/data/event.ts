@@ -1,5 +1,5 @@
 // Fuente única del perfeccionamiento: héroe, barra fija, ticket, contador y JSON-LD salen de acá.
-// Lo marcado [CONFIRMAR] es de ejemplo hasta que Mauv lo confirme: no publicar con esos valores.
+// Datos confirmados por Mauv. `seats.left` se baja a mano y se redeploya cuando se vende un lugar.
 
 export const event = {
   name: 'Perfeccionamiento MAUV311',
@@ -8,10 +8,12 @@ export const event = {
   dayLabel: 'Domingo 22 de noviembre',
   shortDate: 'Dom 22/11',
   timeLabel: '10 h',
-  price: 85_000,
+  endLabel: '16 h aprox.',
+  // Horas del día (10 a 16): base de la cuenta "por hora" del ticket.
+  hours: 6,
+  price: 90_000,
   anchorPrice: 145_000,
-  // [CONFIRMAR] lugares reales del studio. `left` se actualiza a mano y se redeploya.
-  seats: { total: 12, left: 12 },
+  seats: { total: 6, left: 6 },
   venue: 'Mauv Studio',
   street: 'Mitre 2130',
   city: 'Luján',

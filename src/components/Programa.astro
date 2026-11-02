@@ -28,11 +28,11 @@ const temas = [
     {
       temas.map((t) => (
         <li class="row">
-          <div class="copy" data-reveal>
+          <div class="copy" data-mask>
             <h3 class="display word" style={`--chars: ${t.word.length}`}>{t.word}</h3>
             <p>{t.text}</p>
           </div>
-          <figure class="pic">
+          <figure class="pic" data-wipe="up">
             <Image src={t.img} alt={t.alt} widths={[360, 640]} sizes="(min-width: 700px) 18vw, 64vw" data-parallax />
           </figure>
         </li>
@@ -107,6 +107,18 @@ const temas = [
   .word {
     font-size: min(calc((70vw - 3 * var(--m)) / (var(--chars) * 0.97)), var(--t-xl));
     line-height: 0.86;
+  }
+  /* Al pasar el mouse la palabra se acerca a su foto: une las dos mitades de la fila. */
+  .word {
+    transition: translate 0.4s var(--ease);
+  }
+  @media (hover: hover) and (min-width: 700px) {
+    .row:hover .word {
+      translate: 10px 0;
+    }
+    .row:nth-child(even):hover .word {
+      translate: -10px 0;
+    }
   }
   .copy p {
     max-width: 36ch;

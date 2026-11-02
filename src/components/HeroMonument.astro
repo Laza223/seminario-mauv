@@ -1,27 +1,17 @@
 ---
-// Héroe — "El nombre como monumento" (elegido en el checkpoint 1). El escenario queda fijo mientras el video IA
-// avanza con el scroll por debajo del nombre; la fecha, el precio y el botón se van al empezar a bajar y los toma
-// la barra fija. Mientras no haya frames del video, el fondo es la foto de su IG.
+// Héroe — "El nombre como monumento" (elegido en el checkpoint 1): un corte real de Mauv de fondo, el nombre
+// enorme abajo y la fecha, el precio y el botón encima. Foto fija: se enfoca al cargar y el nombre sale de una
+// máscara; después la barra fija toma el relevo del botón.
 import { Image } from 'astro:assets';
 import Logo from './Logo.astro';
-import fallback from '../assets/ig/corte-10.jpg';
+import photo from '../assets/ig/hero-mullet.jpg';
 import { event, money, waHref } from '../data/event';
-import { sequence } from '../data/sequence';
 ---
 
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="stage">
     <div class="media" aria-hidden="true">
-      {
-        sequence ? (
-          <>
-            <img class="pic pic--seq" src={sequence.poster} alt="" width="720" height="1280" fetchpriority="high" />
-            <canvas class="seq" data-seq={sequence.base} data-count={sequence.count} />
-          </>
-        ) : (
-          <Image src={fallback} alt="" widths={[480, 720, 1080]} sizes="100vw" loading="eager" fetchpriority="high" class="pic" />
-        )
-      }
+      <Image src={photo} alt="" widths={[480, 720, 1080]} sizes="(orientation: landscape) 60vh, 100vw" loading="eager" fetchpriority="high" class="pic" />
     </div>
     <div class="scrim" aria-hidden="true"></div>
 
@@ -35,11 +25,11 @@ import { sequence } from '../data/sequence';
       <span class="n"><span class="n1">MAUV</span><span class="n2">311</span></span>
     </h1>
 
-    <div class="info" data-fade>
+    <div class="info">
       <p class="when">{event.dayLabel}<br />{event.timeLabel} · {event.venue}, {event.city}</p>
       <div class="act">
         <p class="sub">Un día entero de fade, contornos y estructura. Explicado técnico y en criollo.</p>
-        <div class="buy">
+        <div class="buy" data-ui>
           <p class="price">
             <s class="price-old" aria-label={`Antes ${money(event.anchorPrice)}`}>{money(event.anchorPrice)}</s>
             <strong>{money(event.price)}</strong>
@@ -54,11 +44,9 @@ import { sequence } from '../data/sequence';
 <style>
   .hero {
     position: relative;
-    height: 180svh;
   }
   .stage {
-    position: sticky;
-    top: 0;
+    position: relative; /* contiene a .media y .scrim: el foco inicial (scale) no se sale ni mide de más */
     height: 100svh;
     min-height: 600px;
     overflow: hidden;
@@ -69,53 +57,59 @@ import { sequence } from '../data/sequence';
     --name-h: calc(var(--name) * 0.74);
   }
   .media,
-  .scrim,
-  .seq {
+  .scrim {
     position: absolute;
     inset: 0;
   }
-  .pic,
-  .seq {
+  .pic {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: 50% 30%;
+    animation: focus 1.6s var(--ease) both;
   }
   .media {
     background: #000;
   }
-  /* En horizontal el video vertical va entero, como una columna centrada del ancho justo del clip,
-     con los costados fundidos en un negro igual al suyo: sin tira de bordes duros ni la tijera cortada en seco. */
+  /* En vertical (celu) la foto ocupa la parte de arriba, entera y sin tapar la cara con el texto: abajo se funde
+     en negro y ahí van la fecha, el precio y el nombre. */
+  @media (orientation: portrait) {
+    .media {
+      background: var(--bg);
+    }
+    .pic {
+      height: 68%;
+      object-position: 24% 0;
+      mask-image: linear-gradient(to bottom, #000 72%, transparent); /* taste-skill-ignore: la foto se funde en el negro del texto */
+    }
+  }
+  /* Tablet vertical: la foto no se estira al ancho (perdería la cara bajo el texto): columna centrada, fundida a los costados. */
+  @media (orientation: portrait) and (min-width: 600px) {
+    .pic {
+      width: auto;
+      margin-inline: auto;
+      aspect-ratio: 1135 / 1492;
+      object-position: 50% 0;
+      mask-image: linear-gradient(to bottom, #000 72%, transparent), linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); /* taste-skill-ignore: fundido de la foto */
+      mask-composite: intersect;
+    }
+  }
+  /* En horizontal la foto vertical va entera, como una columna centrada del alto del héroe,
+     con los costados fundidos en un negro igual al suyo: sin tira de bordes duros. */
   @media (orientation: landscape) {
     .media {
       background: #0a0a0a;
     }
-    .pic--seq,
-    .seq {
+    .pic {
       width: auto;
-      height: 100%;
-      aspect-ratio: 9 / 16;
-      mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); /* taste-skill-ignore: fundido de los bordes del clip vertical */
-    }
-    .pic--seq {
       margin-inline: auto;
+      aspect-ratio: 1135 / 1492;
+      mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); /* taste-skill-ignore: fundido de los bordes de la foto vertical */
     }
-    .seq {
-      right: auto;
-      left: 50%;
-      translate: -50% 0;
-    }
-  }
-  .seq {
-    opacity: 0;
-    transition: opacity 0.4s var(--ease);
-  }
-  .seq[data-ready] {
-    opacity: 1;
   }
   /* Velo neutro solo donde va texto: la única excepción a "sin degradés". */
   .scrim {
-    background: linear-gradient( /* taste-skill-ignore: velo neutro bajo el texto, sobre el video */
+    background: linear-gradient( /* taste-skill-ignore: velo neutro bajo el texto, sobre la foto */
       to bottom,
       rgb(11 11 11 / 0.55),
       rgb(11 11 11 / 0.1) 28%,
@@ -207,29 +201,47 @@ import { sequence } from '../data/sequence';
     font-stretch: 112%;
   }
 
-  /* Entrada en CSS puro: corre sin esperar a GSAP y con reduced-motion queda en 0,01 ms (global.css). */
+  /* Entrada en CSS puro (corre sin esperar a JS; con reduced-motion queda en 0,01 ms, global.css): la foto se enfoca,
+     el nombre sube desde una máscara y la info llega después. */
   .k,
-  .n1,
-  .n2,
   .info > * {
-    animation: rise 1s var(--ease) both;
+    animation: rise 0.9s var(--ease) both;
+  }
+  .n1,
+  .n2 {
+    display: inline-block;
+    animation: unmask 1s var(--ease) both;
   }
   .n1 {
-    animation-delay: 0.08s;
+    animation-delay: 0.12s;
   }
   .n2 {
-    animation-delay: 0.16s;
-  }
-  .info > :first-child {
     animation-delay: 0.24s;
   }
+  .info > :first-child {
+    animation-delay: 0.4s;
+  }
   .info > :last-child {
-    animation-delay: 0.32s;
+    animation-delay: 0.5s;
   }
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(36px);
+      transform: translateY(16px);
+    }
+  }
+  @keyframes unmask {
+    from {
+      clip-path: inset(100% -5% -30% -5%);
+      transform: translateY(32%);
+    }
+    to {
+      clip-path: inset(-30% -5% -30% -5%);
+    }
+  }
+  @keyframes focus {
+    from {
+      transform: scale(1.07);
     }
   }
 
@@ -292,35 +304,3 @@ import { sequence } from '../data/sequence';
     }
   }
 </style>
-
-<script>
-  import { mountSequence, sequenceAllowed } from '../scripts/sequence';
-
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const canvas = hero?.querySelector<HTMLCanvasElement>('[data-seq]');
-  if (hero && sequenceAllowed()) {
-    const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
-    gsap.registerPlugin(ScrollTrigger);
-
-    const seq = canvas ? mountSequence(canvas) : null;
-    // Los primeros frames corren solos al cargar (la tijera cierra); el resto lo maneja el scroll.
-    const intro = 0.18;
-    const state = { p: 0 };
-    if (seq) {
-      gsap.to(state, { p: intro, duration: 1.8, ease: 'power2.out', onUpdate: () => seq.seek(state.p) });
-    }
-    ScrollTrigger.create({
-      trigger: hero,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 0.3,
-      onUpdate: (st) => seq?.seek(intro + st.progress * (1 - intro)),
-    });
-    gsap.to(hero.querySelector('[data-fade]'), {
-      opacity: 0,
-      y: -32,
-      ease: 'power1.in',
-      scrollTrigger: { trigger: hero, start: 'top top', end: '+=35%', scrub: true },
-    });
-  }
-</script>

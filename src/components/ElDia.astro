@@ -1,13 +1,15 @@
 ---
 // El día, hora por hora: especificidad para bajar el miedo a lo desconocido. Horarios reales del mensaje de Mauv.
 import { Image } from 'astro:assets';
-import photo from '../assets/ig/corte-05.jpg';
+import photo from '../assets/ig/foto-05.jpg';
+import { event } from '../data/event';
 
 const pasos = [
   { at: '10:00', title: 'Teoría', text: 'Dos horas de teoría pura, explicada a nivel técnico y en criollo.' },
   { at: '12:00', title: 'Break', text: 'Café y algo para picar.' },
   { at: 'Después', title: 'Demo', text: 'Mauv hace un corte completo con lo que vimos. Cada detalle explicado, cada duda respondida.' },
   { at: 'Al final', title: 'Tu corte', text: 'Hacés un corte a elección con tu modelo y aplicás lo visto.' },
+  { at: `~${event.endLabel.replace(' aprox.', '')}`, title: 'Cierre', text: 'Horario aproximado: depende de cómo se dé el día.' },
 ];
 ---
 
@@ -15,7 +17,7 @@ const pasos = [
   <div class="col">
     <h2 id="dia-title" class="display" data-reveal>Tu domingo</h2>
     <p class="lede" data-reveal>Hora por hora, para que sepas qué pasa y cuándo.</p>
-    <ol data-stagger>
+    <ol data-timeline>
       {
         pasos.map((p) => (
           <li>
@@ -32,8 +34,8 @@ const pasos = [
   <figure class="photo">
     <Image
       src={photo}
-      alt="Mauv cortando con tijera en su studio"
-      widths={[360, 640]}
+      alt="Corte texturizado con flequillo y fade alto, de frente"
+      widths={[480, 800]}
       sizes="(min-width: 900px) 34vw, 80vw"
       data-parallax
     />
@@ -58,11 +60,44 @@ const pasos = [
     line-height: 1.35;
   }
   ol {
+    --p: 1;
+    position: relative;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 28px;
     display: grid;
     gap: 40px;
+  }
+  /* La línea de las horas: avanza con el scroll (sin JS queda completa). */
+  ol::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    bottom: 0.5em;
+    width: 2px; /* taste-skill-ignore: progreso de la línea de horas */
+    background: var(--paper-ink);
+    transform-origin: top;
+    transform: scaleY(var(--p));
+  }
+  /* Cada hora tiene su punto sobre la línea: se llena cuando el scroll llega (sin JS quedan todos llenos). */
+  li {
+    position: relative;
+  }
+  li::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 0.5em;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--paper-ink);
+    border-radius: 50%;
+    background: var(--paper-ink);
+    transition: background-color 0.3s var(--ease);
+  }
+  :global([data-js]) li:not([data-on])::before {
+    background: var(--paper);
   }
   li {
     display: grid;

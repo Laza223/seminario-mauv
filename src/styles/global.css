@@ -111,6 +111,14 @@ a {
 .btn:active {
   transform: scale(0.98);
 }
+@media (hover: hover) {
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+}
 .btn--paper {
   background: var(--paper-ink);
   color: var(--paper);

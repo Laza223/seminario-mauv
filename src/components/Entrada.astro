@@ -5,13 +5,21 @@ import Logo from './Logo.astro';
 import { event, money, savings, savingsPct, waHref } from '../data/event';
 
 const defaultCut = 15_000;
+const minCut = 5_000;
+const maxCut = 40_000;
 const cutsFor = (price: number) => Math.ceil(event.price / price);
+const perHour = Math.round(event.price / event.hours);
+const why = [
+  { title: 'Un día entero', text: `De ${event.timeLabel} a ${event.endLabel.replace(' aprox.', '')} (aprox.): unos ${money(perHour)} la hora de aprender con Mauv al lado.` },
+  { title: `${event.seats.total} lugares`, text: 'Mauv mira el corte de cada uno y responde cada duda.' },
+  { title: 'Te lo llevás', text: 'Guía impresa y en PDF, certificado y tu corte hecho ese mismo día.' },
+];
 ---
 
 <section class="entrada" id="entrada" aria-labelledby="entrada-title">
   <h2 id="entrada-title" class="display">Tu lugar</h2>
 
-  <div class="ticket">
+  <div class="ticket" data-wipe="right">
     <div class="main">
       <Logo class="tlogo" />
       <p class="what">{event.name}</p>
@@ -19,24 +27,35 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
         <div><dt>Día</dt><dd>{event.dayLabel}</dd></div>
         <div><dt>Hora</dt><dd>{event.timeLabel}</dd></div>
         <div><dt>Lugar</dt><dd>{event.venue}, {event.street}, {event.city}</dd></div>
-        <div><dt>Incluye</dt><dd>Guía impresa + PDF y coffee break</dd></div>
+        <div><dt>Incluye</dt><dd>Guía impresa + PDF, certificado y coffee break</dd></div>
       </dl>
     </div>
     <div class="stub">
-      <p class="old"><s class="price-old" aria-label={`Antes ${money(event.anchorPrice)}`}>{money(event.anchorPrice)}</s></p>
+      <p class="old"><s class="price-old" data-strike aria-label={`Antes ${money(event.anchorPrice)}`}>{money(event.anchorPrice)}</s></p>
       <p class="price">{money(event.price)}</p>
       <p class="save">Ahorrás {money(savings)} ({savingsPct}% menos)</p>
       <p class="left">Quedan <strong>{event.seats.left}</strong> de {event.seats.total} lugares</p>
       <a class="btn btn--paper" href={waHref} data-cta="ticket">Reservar por WhatsApp</a>
     </div>
   </div>
-  <p class="note">Te respondemos por WhatsApp con los datos para pagar.</p>
+  <p class="note">Reservás por WhatsApp y coordinás el pago directo con Mauv.</p>
 
-  <div class="calc" data-calc data-price={event.price}>
+  <ul class="why">
+    {
+      why.map((w) => (
+        <li>
+          <h3>{w.title}</h3>
+          <p>{w.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="calc" data-calc data-price={event.price} style={`--fill: ${((defaultCut - minCut) / (maxCut - minCut)) * 100}%`}>
     <label for="cut">¿Cuánto cobrás un corte?</label>
     <div class="row">
       <output for="cut" data-cut>{money(defaultCut)}</output>
-      <input id="cut" type="range" min="5000" max="40000" step="1000" value={defaultCut} />
+      <input id="cut" type="range" min={minCut} max={maxCut} step="1000" value={defaultCut} />
     </div>
     <p class="result" aria-live="polite">
       La recuperás con <strong data-cuts>{cutsFor(defaultCut)} cortes</strong>. Lo que aprendas lo cobrás en cada
@@ -130,8 +149,11 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
   .old {
     font-size: var(--t-md);
   }
-  .old s {
+  /* El tachado es un fondo (no un text-decoration) para poder dibujarlo de izquierda a derecha. */
+  .old .price-old {
     color: var(--paper-muted);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 56% / 100% 2px; /* taste-skill-ignore: tachado dibujable */
   }
   .price {
     font-size: var(--t-lg);
@@ -152,6 +174,25 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
   .note {
     font-size: var(--t-sm);
     color: var(--muted);
+  }
+
+  .why {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: min(100%, 1040px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px 40px;
+  }
+  .why h3 {
+    margin: 0 0 6px;
+    font-size: var(--t-md);
+    font-stretch: 112%;
+    font-weight: 620;
+  }
+  .why p {
+    max-width: 30ch;
   }
 
   .calc {
@@ -176,11 +217,53 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
     font-size: var(--t-md);
     font-stretch: var(--wide);
   }
+  /* Slider propio: la parte recorrida va rellena y la perilla crece al tocarla. */
   input[type='range'] {
     width: 100%;
     height: 44px;
-    accent-color: var(--ink);
+    margin: 0;
+    background: transparent;
+    appearance: none;
     cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--ink) var(--fill), rgb(243 242 239 / 0.22) var(--fill)); /* taste-skill-ignore: relleno del slider */
+  }
+  input[type='range']::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(243 242 239 / 0.22);
+  }
+  input[type='range']::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -10px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    transition: transform 0.15s var(--ease);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    transition: transform 0.15s var(--ease);
+  }
+  input[type='range']:active::-webkit-slider-thumb {
+    transform: scale(1.25);
+  }
+  input[type='range']:active::-moz-range-thumb {
+    transform: scale(1.25);
   }
   .result {
     font-size: var(--t-md);
@@ -191,6 +274,11 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
     font-stretch: 112%;
   }
 
+  @media (max-width: 699px) {
+    .why {
+      grid-template-columns: 1fr;
+    }
+  }
   @media (max-width: 899px) {
     .ticket {
       grid-template-columns: 1fr;
@@ -242,11 +330,28 @@ const cutsFor = (price: number) => Math.ceil(event.price / price);
     const out = box.querySelector<HTMLElement>('[data-cut]')!;
     const cuts = box.querySelector<HTMLElement>('[data-cuts]')!;
     const fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const label = (n: number) => `${n} ${n === 1 ? 'corte' : 'cortes'}`;
+    let shown = Math.ceil(price / Number(input.value));
+    let raf = 0;
+    // El resultado cuenta de un valor al otro en 180 ms en vez de saltar.
+    const countTo = (to: number) => {
+      cancelAnimationFrame(raf);
+      const from = shown;
+      const t0 = performance.now();
+      const step = (t: number) => {
+        const k = calm ? 1 : Math.min(1, (t - t0) / 180);
+        shown = Math.round(from + (to - from) * k);
+        cuts.textContent = label(shown);
+        if (k < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
     const update = () => {
       const v = Number(input.value);
-      const n = Math.ceil(price / v);
       out.textContent = fmt.format(v).replace(/\s/g, '');
-      cuts.textContent = `${n} ${n === 1 ? 'corte' : 'cortes'}`;
+      box.style.setProperty('--fill', `${((v - Number(input.min)) / (Number(input.max) - Number(input.min))) * 100}%`);
+      countTo(Math.ceil(price / v));
     };
     input.addEventListener('input', update);
   }

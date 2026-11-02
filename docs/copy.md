@@ -3,6 +3,15 @@
 Rioplatense, segunda persona (vos), la voz de Mauv. Lo marcado `[CONFIRMAR]` es de ejemplo hasta que Mauv lo confirme.
 Regla: se potencia el encuadre, nunca el número. Nada de cupos, testimonios ni datos inventados.
 
+## Ronda 2 (2026-11-02) — datos confirmados por Mauv (mandan sobre lo de abajo)
+
+- Precio **$90.000** (tachado $145.000 → "Ahorrás $55.000 (38% menos)"), **6 lugares**, certificado, cierre ~16 h (aprox.), el alumno trae su modelo, herramientas básicas.
+- Pago y cancelación: "lo coordinás directo con Mauv por WhatsApp" / "avisá con anticipación". No se nombran medios de pago.
+- Sin bio ni historia del 311. Sin video: el héroe es una foto fija (mullet con fade).
+- Testimonios: 5 citas textuales, sin nombres, entre "Te llevás" y "Tu lugar". Falta confirmar con Mauv el permiso para publicarlas.
+- Único dato sin respuesta: "¿Sirve si recién arranco?" (queda con `confirmar` en `Preguntas.astro`).
+- Los valores `[CONFIRMAR]` y los $85.000 / 12 lugares de más abajo son del borrador original.
+
 ## El argumento (una afirmación por sección, con su prueba)
 
 1. **Héroe** — Es un día con Mauv, el 22/11 en su studio, y cuesta $85.000. Prueba: fecha, lugar y precio en grande.

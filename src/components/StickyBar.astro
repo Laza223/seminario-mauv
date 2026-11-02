@@ -55,21 +55,37 @@ import { event, money, waHref } from '../data/event';
 </style>
 
 <script>
-  // Aparece cuando la info del héroe ya se fue y desaparece cuando se ve el cierre (que tiene su propio botón).
+  // Aparece cuando el botón del héroe ya salió por arriba (no se duplican dos "Reservar" a la vista) y desaparece
+  // cuando se ve el cierre, que tiene su propio botón.
   const bar = document.querySelector<HTMLElement>('[data-sticky]');
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const cta = document.querySelector<HTMLElement>('[data-cta="hero"]');
   const end = document.querySelector<HTMLElement>('.cierre');
-  if (bar && hero) {
+  if (bar && cta) {
     bar.hidden = false;
     let pastHero = false;
     let atEnd = false;
-    const sync = () => bar.toggleAttribute('data-on', pastHero && !atEnd);
-    const onScroll = () => {
-      pastHero = scrollY > innerHeight * 0.35;
-      sync();
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let nudged = false;
+    const sync = () => {
+      const on = pastHero && !atEnd;
+      bar.toggleAttribute('data-on', on);
+      // Una sola vez, a los 3 s de ver la barra, el botón respira para llamar la atención sin insistir.
+      if (on && !nudged && !calm) {
+        nudged = true;
+        setTimeout(() => {
+          if (bar.hasAttribute('data-on')) {
+            bar.querySelector('.btn')?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], {
+              duration: 700,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            });
+          }
+        }, 3000);
+      }
     };
-    addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    new IntersectionObserver(([e]) => {
+      pastHero = !e.isIntersecting && e.boundingClientRect.top < 0;
+      sync();
+    }).observe(cta);
     if (end) {
       new IntersectionObserver(([e]) => {
         atEnd = e.isIntersecting;
